@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MI.IN VISUAL — Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@100;200;300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --cream:#f5f0e8; --ash:#c8c0b4; --charcoal:#1a1a18;
+  --warm-black:#0f0e0c; --gold:#b89a6a; --muted:#6b6560;
+}
+html { scroll-behavior:smooth; }
+body {
+  background:var(--warm-black); color:var(--cream);
+  font-family:'Montserrat',sans-serif; font-weight:200;
+  overflow-x:hidden; cursor:none;
+}
+
+/* CURSOR */
+.cursor {
+  position:fixed; width:8px; height:8px; background:var(--cream);
+  border-radius:50%; pointer-events:none; z-index:9999;
+  transform:translate(-50%,-50%); mix-blend-mode:difference;
+}
+.cursor-ring {
+  position:fixed; width:38px; height:38px;
+  border:1px solid rgba(245,240,232,.35); border-radius:50%;
+  pointer-events:none; z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .25s, height .25s, border-color .25s;
+  mix-blend-mode:difference;
+}
+.cursor-ring.big { width:64px; height:64px; border-color:rgba(184,154,106,.5); }
+
+/* INTRO */
+#intro {
+  position:fixed; inset:0; background:var(--warm-black);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; z-index:2000;
+}
+#intro-title {
+  font-family:'Cormorant Garamond',serif; font-weight:300;
+  font-size:clamp(3rem,8vw,7rem); letter-spacing:.35em;
+  color:var(--cream); display:flex;
+}
+#intro-title span { display:inline-block; transition:opacity .7s ease; }
+#intro-sub {
+  font-family:'Montserrat',sans-serif; font-weight:100;
+  font-size:clamp(.6rem,1.2vw,.85rem); letter-spacing:.5em;
+  color:var(--ash); margin-top:1.4rem; display:flex; text-transform:uppercase;
+}
+#intro-sub span { display:inline-block; transition:opacity .7s ease; }
+#intro-line {
+  width:0; height:1px; background:var(--gold);
+  margin-top:2.4rem; transition:width 1.2s ease;
+}
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:2rem 4rem; z-index:500; opacity:0; transition:opacity 1s ease;
+  background:linear-gradient(180deg,rgba(15,14,12,.88) 0%,transparent 100%);
+}
+nav.visible { opacity:1; }
+.nav-logo {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem; letter-spacing:.3em; color:var(--cream); font-weight:300;
+}
+.nav-links { display:flex; gap:3rem; list-style:none; }
+.nav-links a {
+  font-size:.6rem; letter-spacing:.25em; color:var(--ash);
+  text-decoration:none; text-transform:uppercase; transition:color .3s;
+}
+.nav-links a:hover { color:var(--cream); }
+
+/* HERO */
+#hero {
+  position:relative; width:100vw; height:100vh;
+  overflow:hidden; background:#060504;
+}
+#hero-bg {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; opacity:.55; filter:grayscale(15%);
+  transform-origin:center; transition:transform 12s ease;
+  will-change:transform;
+}
+.hero-vignette {
+  position:absolute; inset:0;
+  background:
+    linear-gradient(180deg,rgba(15,14,12,.35) 0%,transparent 35%,transparent 55%,rgba(15,14,12,.98) 100%),
+    radial-gradient(ellipse at center,transparent 35%,rgba(15,14,12,.55) 100%);
+}
+.hero-content {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding:0 4rem 5.5rem;
+}
+.hero-eyebrow {
+  font-size:.6rem; letter-spacing:.45em; color:var(--gold);
+  text-transform:uppercase; margin-bottom:1.2rem;
+  opacity:0; animation:fadeUp 1s forwards; animation-delay:4.6s;
+}
+.hero-h1 {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.5rem,7vw,6.5rem); font-weight:300;
+  line-height:1.05; color:var(--cream); max-width:680px;
+  opacity:0; animation:fadeUp 1s forwards; animation-delay:4.9s;
+}
+.hero-h1 em { font-style:italic; color:var(--ash); }
+.hero-scroll {
+  position:absolute; right:4rem; bottom:5rem;
+  display:flex; flex-direction:column; align-items:center; gap:.8rem;
+  opacity:0; animation:fadeUp 1s forwards; animation-delay:5.3s;
+}
+.hero-scroll span {
+  font-size:.55rem; letter-spacing:.35em; color:var(--muted);
+  text-transform:uppercase; writing-mode:vertical-rl;
+}
+.scroll-bar {
+  width:1px; height:60px;
+  background:linear-gradient(180deg,var(--gold),transparent);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:.5;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.25)} }
+@keyframes fadeUp {
+  from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)}
+}
+
+/* GALLERY */
+#gallery { padding:7rem 3rem; background:var(--warm-black); }
+.section-label {
+  font-size:.6rem; letter-spacing:.45em; color:var(--gold);
+  text-transform:uppercase; margin-bottom:4rem;
+  display:flex; align-items:center; gap:1.5rem;
+}
+.section-label::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(90deg,var(--gold),transparent); opacity:.35;
+}
+.gallery-grid {
+  display:grid; grid-template-columns:repeat(12,1fr); gap:10px;
+}
+.g-item {
+  position:relative; overflow:hidden; cursor:none;
+  background:rgba(25,23,18,.8);
+}
+.g-item img {
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform 1.4s cubic-bezier(.25,.46,.45,.94), filter .6s ease;
+  filter:brightness(.88) saturate(.8);
+}
+.g-item:hover img { transform:scale(1.07); filter:brightness(1) saturate(1.05); }
+.g-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(180deg,transparent 35%,rgba(10,9,8,.9) 100%);
+  opacity:0; transition:opacity .5s;
+  display:flex; flex-direction:column; justify-content:flex-end; padding:1.8rem;
+}
+.g-item:hover .g-overlay { opacity:1; }
+.g-overlay h4 {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem; font-weight:300; color:var(--cream); margin-bottom:.3rem;
+}
+.g-overlay p { font-size:.52rem; letter-spacing:.3em; color:var(--ash); text-transform:uppercase; }
+.g-zoom {
+  position:absolute; top:1.2rem; right:1.2rem;
+  width:36px; height:36px;
+  border:1px solid rgba(245,240,232,.35); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transform:scale(.7);
+  transition:opacity .35s, transform .35s;
+  background:rgba(15,14,12,.3); backdrop-filter:blur(4px);
+}
+.g-item:hover .g-zoom { opacity:1; transform:scale(1); }
+.g-zoom svg { width:14px; stroke:var(--cream); fill:none; stroke-width:1.5; }
+.g1  { grid-column:1/8;  aspect-ratio:16/9; }
+.g2  { grid-column:8/13; aspect-ratio:4/5; }
+.g3  { grid-column:1/5;  aspect-ratio:3/4; }
+.g4  { grid-column:5/9;  aspect-ratio:4/3; }
+.g5  { grid-column:9/13; aspect-ratio:1; }
+.g6  { grid-column:1/6;  aspect-ratio:16/9; }
+.g7  { grid-column:6/13; aspect-ratio:21/9; }
+
+/* LIGHTBOX */
+#lightbox {
+  position:fixed; inset:0; background:rgba(8,7,6,.97);
+  z-index:4000; display:none;
+  flex-direction:column; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .4s;
+}
+#lightbox.open { display:flex; }
+#lightbox.visible { opacity:1; }
+.lb-inner {
+  position:relative; max-width:92vw; max-height:86vh;
+  display:flex; align-items:center; justify-content:center;
+}
+#lb-img {
+  max-width:92vw; max-height:84vh; object-fit:contain;
+  border:1px solid rgba(184,154,106,.12);
+  opacity:0; transition:opacity .45s;
+  display:block;
+}
+#lb-img.show { opacity:1; }
+.lb-spin {
+  position:absolute; width:28px; height:28px;
+  border:1px solid rgba(184,154,106,.2);
+  border-top-color:var(--gold); border-radius:50%;
+  animation:spin .85s linear infinite; display:block;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.lb-btn {
+  position:fixed; background:transparent; border:none;
+  cursor:none; display:flex; align-items:center; justify-content:center;
+  transition:opacity .3s;
+}
+.lb-btn:hover { opacity:.7; }
+#lbClose {
+  top:2rem; right:2rem; width:44px; height:44px;
+  border:1px solid rgba(245,240,232,.18) !important; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+#lbClose svg { width:16px; stroke:var(--ash); fill:none; stroke-width:1.5; }
+#lbPrev, #lbNext {
+  top:50%; transform:translateY(-50%);
+  width:52px; height:52px;
+  border:1px solid rgba(245,240,232,.12) !important;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+#lbPrev { left:1.5rem; }
+#lbNext { right:1.5rem; }
+#lbPrev svg, #lbNext svg { width:20px; stroke:var(--ash); fill:none; stroke-width:1.5; }
+.lb-meta {
+  position:fixed; bottom:2.5rem; left:50%; transform:translateX(-50%);
+  text-align:center; pointer-events:none;
+}
+.lb-meta h3 {
+  font-family:'Cormorant Garamond',serif;
+  font-weight:300; font-size:1.15rem; color:var(--cream);
+}
+.lb-meta p { font-size:.52rem; letter-spacing:.35em; color:var(--muted); text-transform:uppercase; margin-top:.4rem; }
+.lb-count {
+  position:fixed; top:2rem; left:50%; transform:translateX(-50%);
+  font-size:.52rem; letter-spacing:.4em; color:var(--muted); text-transform:uppercase;
+}
+
+/* PHILOSOPHY */
+#philosophy {
+  padding:10rem 4rem; display:grid; grid-template-columns:1fr 1fr;
+  gap:7rem; align-items:center; position:relative; overflow:hidden;
+}
+#philosophy::before {
+  content:'SPACE'; position:absolute;
+  font-family:'Cormorant Garamond',serif; font-size:28vw; font-weight:300;
+  color:rgba(184,154,106,.025);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  pointer-events:none; white-space:nowrap;
+}
+.phil-quote {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.2rem,3.8vw,3.2rem); font-weight:300;
+  line-height:1.35; color:var(--cream);
+}
+.phil-quote em { font-style:italic; color:var(--gold); }
+.phil-body { color:var(--ash); line-height:2.1; font-size:.78rem; letter-spacing:.04em; }
+.phil-body p+p { margin-top:1.5rem; }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-top:3rem; }
+.stat { border-top:1px solid rgba(184,154,106,.2); padding-top:1.5rem; }
+.stat-v {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.8rem; font-weight:300; color:var(--cream); line-height:1;
+}
+.stat-v sup { font-size:.9rem; color:var(--gold); }
+.stat-l { font-size:.52rem; letter-spacing:.3em; color:var(--muted); text-transform:uppercase; margin-top:.5rem; }
+
+/* SERVICES */
+#services { padding:8rem 3rem; background:var(--charcoal); }
+.svc-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5rem; }
+.svc-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2.5rem,5vw,4rem); font-weight:300; color:var(--cream); }
+.svc-sub { font-size:.72rem; color:var(--muted); max-width:260px; line-height:1.9; }
+.svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(184,154,106,.1); }
+.svc {
+  background:var(--charcoal); padding:3rem 2.5rem;
+  position:relative; overflow:hidden; transition:background .4s;
+}
+.svc::after {
+  content:''; position:absolute; bottom:0; left:0;
+  width:100%; height:2px; background:var(--gold);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .5s cubic-bezier(.25,.46,.45,.94);
+}
+.svc:hover::after { transform:scaleX(1); }
+.svc:hover { background:rgba(184,154,106,.03); }
+.svc-n { font-family:'Cormorant Garamond',serif; font-size:4.5rem; font-weight:300; color:rgba(184,154,106,.1); line-height:1; margin-bottom:1.5rem; transition:color .4s; }
+.svc:hover .svc-n { color:rgba(184,154,106,.22); }
+.svc-name { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:300; color:var(--cream); margin-bottom:1rem; }
+.svc-desc { font-size:.68rem; color:var(--muted); line-height:2; }
+
+/* CONTACT */
+#contact {
+  padding:10rem 4rem; display:grid; grid-template-columns:1fr 1fr;
+  gap:8rem; position:relative;
+}
+#contact::before {
+  content:''; position:absolute; top:0; left:4rem; right:4rem; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:.2;
+}
+.ct-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2.8rem,5.5vw,4.5rem); font-weight:300; line-height:1.15; color:var(--cream); }
+.ct-title em { display:block; font-style:italic; color:var(--gold); }
+.ct-rows { margin-top:3rem; }
+.ct-row { display:flex; flex-direction:column; gap:.4rem; padding:1.8rem 0; border-bottom:1px solid rgba(200,192,180,.07); }
+.ct-lbl { font-size:.52rem; letter-spacing:.4em; color:var(--gold); text-transform:uppercase; }
+.ct-val { font-size:.88rem; color:var(--ash); letter-spacing:.04em; }
+.ct-form { display:flex; flex-direction:column; gap:2rem; padding-top:1rem; }
+.fg { position:relative; }
+.fl { font-size:.52rem; letter-spacing:.4em; color:var(--gold); text-transform:uppercase; margin-bottom:.8rem; display:block; }
+.fi, .fta {
+  width:100%; background:transparent; border:none;
+  border-bottom:1px solid rgba(200,192,180,.18);
+  padding:.8rem 0; color:var(--cream);
+  font-family:'Montserrat',sans-serif; font-size:.78rem;
+  font-weight:200; letter-spacing:.05em; outline:none; transition:border-color .3s;
+}
+.fi:focus, .fta:focus { border-color:var(--gold); }
+.fta { resize:none; height:90px; }
+.fb {
+  background:transparent; border:1px solid var(--gold); color:var(--gold);
+  font-family:'Montserrat',sans-serif; font-size:.58rem; font-weight:300;
+  letter-spacing:.4em; text-transform:uppercase;
+  padding:1.2rem 3rem; cursor:none;
+  position:relative; overflow:hidden; align-self:flex-start; transition:color .4s;
+}
+.fb::before {
+  content:''; position:absolute; inset:0;
+  background:var(--gold); transform:scaleX(0); transform-origin:left;
+  transition:transform .4s cubic-bezier(.25,.46,.45,.94); z-index:0;
+}
+.fb:hover::before { transform:scaleX(1); }
+.fb:hover { color:var(--warm-black); }
+.fb span { position:relative; z-index:1; }
+
+/* FOOTER */
+footer {
+  padding:3rem 4rem; display:flex; justify-content:space-between; align-items:center;
+  border-top:1px solid rgba(200,192,180,.07);
+}
+.flogo { font-family:'Cormorant Garamond',serif; font-size:1rem; letter-spacing:.3em; color:var(--muted); }
+.fcopy { font-size:.52rem; letter-spacing:.2em; color:var(--muted); }
+.flinks { display:flex; gap:2rem; }
+.flinks a { font-size:.52rem; letter-spacing:.25em; color:var(--muted); text-decoration:none; text-transform:uppercase; transition:color .3s; }
+.flinks a:hover { color:var(--ash); }
+
+/* REVEAL */
+.reveal { opacity:0; transform:translateY(34px); transition:opacity .9s ease,transform .9s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- INTRO -->
+<div id="intro">
+  <div id="intro-title"></div>
+  <div id="intro-sub"></div>
+  <div id="intro-line"></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">MI.IN VISUAL</div>
+  <ul class="nav-links">
+    <li><a href="#gallery">Works</a></li>
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO — Full screen architectural photo with Ken Burns pan -->
+<section id="hero">
+  <img id="hero-bg"
+    src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&q=85&fit=crop&auto=format"
+    alt="Architecture hero"
+  >
+  <div class="hero-vignette"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Est. 2018 — Hà Nội, Vietnam</div>
+    <h1 class="hero-h1">Where Structure<br>Meets <em>Soul.</em></h1>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-bar"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="section-label reveal">Selected Works</div>
+  <div class="gallery-grid" id="galleryGrid"></div>
+</section>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbClose">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <button class="lb-btn" id="lbPrev">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="lb-inner">
+    <div class="lb-spin" id="lbSpin"></div>
+    <img id="lb-img" src="" alt="">
+  </div>
+  <button class="lb-btn" id="lbNext">
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <div class="lb-meta" id="lbMeta"></div>
+</div>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <div class="phil-quote reveal">
+    "Architecture is<br><em>frozen music</em> —<br>space made<br>to resonate."
+  </div>
+  <div class="reveal">
+    <div class="phil-body">
+      <p>We believe every structure holds an invisible frequency. At MI.IN VISUAL, our practice begins not with form but with feeling — the precise emotional register a space should carry when light falls across its surfaces at dawn.</p>
+      <p>From cultural institutions to intimate residences, we translate intangible human experience into geometry, material, and light. Our process is slow, intentional, deeply collaborative.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-v">87<sup>+</sup></div><div class="stat-l">Projects Completed</div></div>
+      <div class="stat"><div class="stat-v">14</div><div class="stat-l">Years of Practice</div></div>
+      <div class="stat"><div class="stat-v">23<sup>+</sup></div><div class="stat-l">Design Awards</div></div>
+      <div class="stat"><div class="stat-v">09</div><div class="stat-l">Countries</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="svc-head reveal">
+    <h2 class="svc-title">What<br>We Do</h2>
+    <p class="svc-sub">A full-spectrum studio where craft meets concept — every discipline in service of a singular vision.</p>
+  </div>
+  <div class="svc-grid reveal">
+    <div class="svc"><div class="svc-n">01</div><div class="svc-name">Architectural Design</div><p class="svc-desc">From concept to construction. Residential, commercial, cultural — built on rigorous craft and poetic intention.</p></div>
+    <div class="svc"><div class="svc-n">02</div><div class="svc-name">Interior Architecture</div><p class="svc-desc">Spaces that breathe. We orchestrate material, light, and proportion to create interiors of lasting character.</p></div>
+    <div class="svc"><div class="svc-n">03</div><div class="svc-name">Urban Strategy</div><p class="svc-desc">City-scale thinking. Master plans and public realm frameworks that shape how communities evolve.</p></div>
+    <div class="svc"><div class="svc-n">04</div><div class="svc-name">Landscape Design</div><p class="svc-desc">The dialogue between structure and nature. Gardens, courtyards, and public spaces alive with seasonal rhythm.</p></div>
+    <div class="svc"><div class="svc-n">05</div><div class="svc-name">Visual Identity</div><p class="svc-desc">The brand as architecture. We extend spatial philosophy into graphic systems and wayfinding.</p></div>
+    <div class="svc"><div class="svc-n">06</div><div class="svc-name">Consultancy</div><p class="svc-desc">Strategic guidance for developers, institutions, and governments navigating complex design challenges.</p></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="reveal">
+    <h2 class="ct-title">Begin a<br><em>Conversation.</em></h2>
+    <div class="ct-rows">
+      <div class="ct-row"><span class="ct-lbl">Studio</span><span class="ct-val">18 Tràng Tiền, Hoàn Kiếm, Hà Nội</span></div>
+      <div class="ct-row"><span class="ct-lbl">Email</span><span class="ct-val">studio@mi-in.vn</span></div>
+      <div class="ct-row"><span class="ct-lbl">Tel</span><span class="ct-val">+84 24 3826 0000</span></div>
+      <div class="ct-row"><span class="ct-lbl">Hours</span><span class="ct-val">Mon – Fri, 9:00 – 18:00 ICT</span></div>
+    </div>
+  </div>
+  <div class="reveal">
+    <form class="ct-form" onsubmit="return false">
+      <div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" placeholder="Your name"></div>
+      <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" placeholder="your@email.com"></div>
+      <div class="fg"><label class="fl">Project Type</label><input class="fi" type="text" placeholder="Residential / Commercial / Other"></div>
+      <div class="fg"><label class="fl">Message</label><textarea class="fta" placeholder="Tell us about your vision…"></textarea></div>
+      <button class="fb" type="submit"><span>Send Inquiry</span></button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="flogo">MI.IN VISUAL</div>
+  <div class="fcopy">© 2025 MI.IN Visual Architecture. All rights reserved.</div>
+  <div class="flinks">
+    <a href="#">Instagram</a>
+    <a href="#">Behance</a>
+    <a href="#">LinkedIn</a>
+  </div>
+</footer>
+
+<script>
+// ── GALLERY DATA — Unsplash photo IDs (free license) ──────────────────────
+// Each entry: Unsplash photo ID + metadata
+const PHOTOS = [
+  { src:'photo-1486325212027-8081e485255e', title:'The Lumen Tower',    cat:'Commercial — 2024', cls:'g1' },
+  { src:'photo-1601918774530-bfa2af5f0a5e', title:'Villa Serena',       cat:'Residential — 2023', cls:'g2' },
+  { src:'photo-1503387762-592deb58ef4e', title:'Cascade Interior',   cat:'Interior — 2024',    cls:'g3' },
+  { src:'photo-1477959858617-67f85cf4f1df', title:'Cultural Pavilion', cat:'Public — 2022',      cls:'g4' },
+  { src:'photo-1560448204-e02f11c3d0e2', title:'Zen Residence',      cat:'Landscape — 2023',   cls:'g5' },
+  { src:'photo-1518005020951-eccb494ad742', title:'Silk Bridge',       cat:'Infrastructure — 2021', cls:'g6' },
+  { src:'photo-1545558014-8692077e9b5c', title:'Nocturne City',      cat:'Urban Design — 2024', cls:'g7' },
+];
+
+const BASE = 'https://images.unsplash.com/';
+
+function imgURL(src, w, q) {
+  return `${BASE}${src}?w=${w}&q=${q||80}&fit=crop&auto=format`;
+}
+
+// Build gallery grid
+const grid = document.getElementById('galleryGrid');
+PHOTOS.forEach((p, i) => {
+  const el = document.createElement('div');
+  el.className = `g-item ${p.cls} reveal`;
+  el.style.transitionDelay = (i * 0.075) + 's';
+  el.innerHTML = `
+    <img src="${imgURL(p.src, 900, 75)}" alt="${p.title}" loading="lazy">
+    <div class="g-overlay">
+      <h4>${p.title}</h4>
+      <p>${p.cat}</p>
+    </div>
+    <div class="g-zoom">
+      <svg viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <line x1="11" y1="8" x2="11" y2="14"/>
+        <line x1="8" y1="11" x2="14" y2="11"/>
+      </svg>
+    </div>`;
+  el.addEventListener('click', () => openLb(i));
+  grid.appendChild(el);
+});
+
+// ── LIGHTBOX ──────────────────────────────────────────────────────────────
+let lbIdx = 0;
+const lb    = document.getElementById('lightbox');
+const lbImg = document.getElementById('lb-img');
+const lbSp  = document.getElementById('lbSpin');
+const lbMeta= document.getElementById('lbMeta');
+const lbCnt = document.getElementById('lbCount');
+
+function openLb(i) {
+  lbIdx = i;
+  lb.style.display = 'flex';
+  requestAnimationFrame(() => lb.classList.add('visible'));
+  document.body.style.overflow = 'hidden';
+  showLbImg(i);
+}
+function closeLb() {
+  lb.classList.remove('visible');
+  setTimeout(() => { lb.style.display = 'none'; }, 400);
+  document.body.style.overflow = '';
+}
+function showLbImg(i) {
+  const p = PHOTOS[i];
+  lbImg.classList.remove('show');
+  lbSp.style.display = 'block';
+  const url = imgURL(p.src, 1920, 90);
+  const tmp = new Image();
+  tmp.onload = () => {
+    lbImg.src = url;
+    lbImg.classList.add('show');
+    lbSp.style.display = 'none';
+  };
+  tmp.onerror = () => {
+    lbImg.src = imgURL(PHOTOS[(i+1)%PHOTOS.length].src, 1920, 90);
+    lbImg.classList.add('show');
+    lbSp.style.display = 'none';
+  };
+  tmp.src = url;
+  lbMeta.innerHTML = `<h3>${p.title}</h3><p>${p.cat}</p>`;
+  lbCnt.textContent = `${i+1} / ${PHOTOS.length}`;
+}
+function lbMove(d) {
+  lbIdx = (lbIdx + d + PHOTOS.length) % PHOTOS.length;
+  showLbImg(lbIdx);
+}
+
+document.getElementById('lbClose').onclick = closeLb;
+document.getElementById('lbPrev').onclick  = () => lbMove(-1);
+document.getElementById('lbNext').onclick  = () => lbMove(1);
+lb.addEventListener('click', e => { if(e.target === lb) closeLb(); });
+document.addEventListener('keydown', e => {
+  if(!lb.classList.contains('visible')) return;
+  if(e.key==='Escape') closeLb();
+  if(e.key==='ArrowLeft') lbMove(-1);
+  if(e.key==='ArrowRight') lbMove(1);
+});
+
+// Swipe support
+let tx=0;
+lb.addEventListener('touchstart', e => { tx=e.touches[0].clientX; });
+lb.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if(Math.abs(dx)>50) lbMove(dx<0 ? 1 : -1);
+});
+
+// ── PIANO INTRO ───────────────────────────────────────────────────────────
+const TITLE = 'MI.IN VISUAL';
+const SUB   = 'Symphony of Space';
+const tEl   = document.getElementById('intro-title');
+const sEl   = document.getElementById('intro-sub');
+const lEl   = document.getElementById('intro-line');
+const iEl   = document.getElementById('intro');
+const nEl   = document.getElementById('nav');
+
+[...TITLE].forEach(ch => {
+  const s=document.createElement('span');
+  s.textContent = ch===' '?'\u00A0':ch;
+  tEl.appendChild(s);
+});
+[...SUB].forEach(ch => {
+  const s=document.createElement('span');
+  s.textContent = ch===' '?'\u00A0':ch;
+  sEl.appendChild(s);
+});
+
+setTimeout(() => { lEl.style.width='100px'; }, 600);
+
+function pianoOut(spans, base) {
+  const arr=[...Array(spans.length).keys()], order=[];
+  const tmp=[...arr];
+  while(tmp.length) order.push(tmp.splice(Math.floor(Math.random()*Math.min(3,tmp.length)),1)[0]);
+  order.forEach((idx,n) => setTimeout(()=>{ spans[idx].style.opacity='0'; }, base+n*172+Math.random()*65));
+}
+
+setTimeout(()=>{
+  pianoOut(sEl.querySelectorAll('span'), 0);
+  pianoOut(tEl.querySelectorAll('span'), 300);
+  lEl.style.transition='width .7s ease'; lEl.style.width='0';
+  const tot=(TITLE.length+SUB.length)*172+900;
+  setTimeout(()=>{
+    iEl.style.transition='opacity .9s ease'; iEl.style.opacity='0';
+    setTimeout(()=>{ iEl.style.display='none'; nEl.classList.add('visible'); }, 900);
+  }, tot);
+}, 2000);
+
+// ── CURSOR ────────────────────────────────────────────────────────────────
+const cur=document.getElementById('cursor'), ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
+(function tick(){
+  rx+=(mx-rx)*.14; ry+=(my-ry)*.14;
+  cur.style.cssText=`left:${mx}px;top:${my}px`;
+  ring.style.cssText=`left:${rx}px;top:${ry}px`;
+  requestAnimationFrame(tick);
+})();
+document.querySelectorAll('a,button,.g-item,.fb').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────────────────
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// ── HERO KEN BURNS PAN ────────────────────────────────────────────────────
+const heroBg = document.getElementById('hero-bg');
+setTimeout(()=>{
+  heroBg.style.transition='transform 14s ease-in-out';
+  heroBg.style.transform='scale(1.08) translateX(-2%)';
+},100);
+
+// ── HERO PARALLAX ─────────────────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  heroBg.style.transform=`scale(1.08) translateY(${y*.25}px)`;
+});
+</script>
+</body>
+</html>
