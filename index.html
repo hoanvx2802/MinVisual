@@ -43,13 +43,13 @@ body {
 #intro-title {
   font-family:'Cormorant Garamond',serif; font-weight:300;
   font-size:clamp(3rem,8vw,7rem); letter-spacing:.35em;
-  color:var(--cream); display:flex;
+  color:var(--cream); display:flex; text-align: center;
 }
 #intro-title span { display:inline-block; transition:opacity .7s ease; }
 #intro-sub {
   font-family:'Montserrat',sans-serif; font-weight:100;
   font-size:clamp(.6rem,1.2vw,.85rem); letter-spacing:.5em;
-  color:var(--ash); margin-top:1.4rem; display:flex; text-transform:uppercase;
+  color:var(--ash); margin-top:1.4rem; display:flex; text-transform:uppercase; text-align: center;
 }
 #intro-sub span { display:inline-block; transition:opacity .7s ease; }
 #intro-line {
@@ -356,6 +356,67 @@ footer {
 /* REVEAL */
 .reveal { opacity:0; transform:translateY(34px); transition:opacity .9s ease,transform .9s ease; }
 .reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ==========================================================
+   📱 MOBILE RESPONSIVE (Màn hình dưới 768px)
+   ========================================================== */
+@media (max-width: 768px) {
+  /* Tắt custom cursor để người dùng dễ thao tác vuốt, chạm */
+  body { cursor: auto; }
+  .cursor, .cursor-ring, .g-zoom { display: none !important; }
+  
+  /* Giảm padding các section */
+  section, #gallery, #philosophy, #services, #contact { 
+    padding: 5rem 1.5rem !important; 
+  }
+
+  /* Intro */
+  #intro-title { flex-wrap: wrap; justify-content: center; }
+  #intro-sub { flex-wrap: wrap; justify-content: center; }
+
+  /* Navigation */
+  nav { 
+    padding: 1.5rem; flex-direction: column; gap: 1.5rem; 
+    background: rgba(15,14,12,0.98); 
+  }
+  .nav-links { gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+  /* Hero */
+  .hero-content { padding: 0 1.5rem 4rem; }
+  .hero-h1 { font-size: clamp(2.8rem, 12vw, 4rem); }
+  .hero-scroll { right: 1.5rem; bottom: 2rem; }
+
+  /* Gallery Grid -> Chuyển thành dạng cuộn dọc 1 cột trên mobile */
+  .gallery-grid { display: flex; flex-direction: column; gap: 15px; }
+  .g-item { width: 100%; aspect-ratio: 4/5 !important; }
+  .g-overlay { opacity: 1; background: linear-gradient(180deg,transparent 50%,rgba(10,9,8,0.95) 100%); }
+
+  /* Lightbox */
+  #lbClose { top: 1rem; right: 1rem; width: 36px; height: 36px; }
+  #lbPrev { left: 0.5rem; width: 40px; height: 40px; }
+  #lbNext { right: 0.5rem; width: 40px; height: 40px; }
+  .lb-count { top: 1.5rem; }
+  .lb-meta { bottom: 1.5rem; }
+
+  /* Philosophy */
+  #philosophy { grid-template-columns: 1fr; gap: 4rem; text-align: center; }
+  #philosophy::before { font-size: 35vw; top: 10%; }
+  .stats { grid-template-columns: 1fr 1fr; gap: 1.5rem; text-align: left; }
+
+  /* Services */
+  .svc-head { flex-direction: column; align-items: flex-start; gap: 1.5rem; margin-bottom: 3rem; }
+  .svc-grid { grid-template-columns: 1fr; }
+  .svc { padding: 2.5rem 2rem; }
+
+  /* Contact */
+  #contact { grid-template-columns: 1fr; gap: 4rem; }
+  #contact::before { left: 1.5rem; right: 1.5rem; }
+  .ct-title { font-size: clamp(2.5rem, 10vw, 3.5rem); }
+
+  /* Footer */
+  footer { flex-direction: column; gap: 2rem; padding: 3rem 1.5rem; text-align: center; }
+  .flinks { justify-content: center; }
+}
 </style>
 </head>
 <body>
@@ -363,14 +424,12 @@ footer {
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- INTRO -->
 <div id="intro">
   <div id="intro-title"></div>
   <div id="intro-sub"></div>
   <div id="intro-line"></div>
 </div>
 
-<!-- NAV -->
 <nav id="nav">
   <div class="nav-logo">MI.IN VISUAL</div>
   <ul class="nav-links">
@@ -381,7 +440,6 @@ footer {
   </ul>
 </nav>
 
-<!-- HERO — Full screen architectural photo with Ken Burns pan -->
 <section id="hero">
   <img id="hero-bg"
     src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&q=85&fit=crop&auto=format"
@@ -398,13 +456,11 @@ footer {
   </div>
 </section>
 
-<!-- GALLERY -->
 <section id="gallery">
   <div class="section-label reveal">Selected Works</div>
   <div class="gallery-grid" id="galleryGrid"></div>
 </section>
 
-<!-- LIGHTBOX -->
 <div id="lightbox">
   <span class="lb-count" id="lbCount"></span>
   <button class="lb-btn" id="lbClose">
@@ -423,7 +479,6 @@ footer {
   <div class="lb-meta" id="lbMeta"></div>
 </div>
 
-<!-- PHILOSOPHY -->
 <section id="philosophy">
   <div class="phil-quote reveal">
     "Architecture is<br><em>frozen music</em> —<br>space made<br>to resonate."
@@ -442,7 +497,6 @@ footer {
   </div>
 </section>
 
-<!-- SERVICES -->
 <section id="services">
   <div class="svc-head reveal">
     <h2 class="svc-title">What<br>We Do</h2>
@@ -458,7 +512,6 @@ footer {
   </div>
 </section>
 
-<!-- CONTACT -->
 <section id="contact">
   <div class="reveal">
     <h2 class="ct-title">Begin a<br><em>Conversation.</em></h2>
